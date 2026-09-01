@@ -28,8 +28,17 @@ import java.util.Objects;
  *     System.out.println(position.ticker() + ": " + position.quantity());
  * }
  * }</pre>
+ *
+ * <p>Instead of calling {@link Builder#apiKey}, the key can be supplied via the
+ * {@value #API_KEY_PROPERTY} system property (e.g. {@code -Dtrading212.apiKey=...}, or
+ * {@code System.setProperty(Trading212Client.API_KEY_PROPERTY, System.getenv("TRADING212_API_KEY"))}
+ * early in {@code main}). This library never reads the environment variable itself &mdash; the
+ * host application decides whether and how to forward it into the property.
  */
 public final class Trading212Client {
+
+    /** System property consulted for the API key when {@link Builder#apiKey} isn't called. */
+    public static final String API_KEY_PROPERTY = "trading212.apiKey";
 
     private final AccountApi account;
     private final PortfolioApi portfolio;
@@ -93,7 +102,8 @@ public final class Trading212Client {
 
         /**
          * The API key generated from Settings &gt; API (Beta) in the Trading212 app. Demo and live
-         * keys are separate; use the one matching {@link #environment}. Required.
+         * keys are separate; use the one matching {@link #environment}. If not called, {@link #build}
+         * falls back to the {@value #API_KEY_PROPERTY} system property.
          */
         public Builder apiKey(String apiKey) {
             this.apiKey = apiKey;
@@ -118,7 +128,11 @@ public final class Trading212Client {
         public Trading212Client build() {
             Objects.requireNonNull(environment, "environment must be set");
             if (apiKey == null || apiKey.isBlank()) {
-                throw new IllegalStateException("apiKey must be set");
+                apiKey = System.getProperty(API_KEY_PROPERTY);
+            }
+            if (apiKey == null || apiKey.isBlank()) {
+                throw new IllegalStateException(
+                        "apiKey must be set, either via Builder.apiKey(...) or the " + API_KEY_PROPERTY + " system property");
             }
             if (httpClient == null) {
                 httpClient = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(10)).build();

@@ -53,6 +53,26 @@ for (Dividend dividend : client.history().getDividends()) {
 }
 ```
 
+### Supplying the API key via a system property
+
+Instead of `.apiKey(...)`, the key can be supplied through the `trading212.apiKey` system property
+(`Trading212Client.API_KEY_PROPERTY`). This is handy for apps that read secrets from the
+environment at startup and forward them as JVM properties rather than passing them through
+application code:
+
+```bash
+java -Dtrading212.apiKey="$TRADING212_API_KEY" -jar app.jar
+```
+
+```java
+// or programmatically, early in main:
+System.setProperty(Trading212Client.API_KEY_PROPERTY, System.getenv("TRADING212_API_KEY"));
+
+Trading212Client client = Trading212Client.builder()
+        .environment(Trading212Environment.LIVE)
+        .build(); // apiKey() omitted; falls back to the system property
+```
+
 ### Rate limiting
 
 Trading212 rate-limits every endpoint per account, regardless of API key or IP. By default the
