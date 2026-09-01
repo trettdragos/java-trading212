@@ -13,6 +13,14 @@
   <description>Unofficial Java client library for the Trading212 Public (Equity) API.</description>
   <url>https://github.com/trettdragos/java-trading212</url>
 
+  <licenses>
+    <license>
+      <name>Apache-2.0</name>
+      <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
   <distributionManagement>
     <repository>
       <id>github</id>

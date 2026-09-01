@@ -151,3 +151,7 @@ triggered whenever a GitHub Release is published:
 
 `pom.xml` itself stays on its `-SNAPSHOT` version between releases; the release tag is the only
 source of truth for published version numbers.
+
+## License
+
+Licensed under the [Apache License, Version 2.0](LICENSE).
