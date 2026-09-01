@@ -15,18 +15,46 @@ This project is not affiliated with, endorsed by, or supported by Trading212.
 
 ## Install
 
-Not yet published to Maven Central. For now, build and install it locally:
+Published to [GitHub Packages](https://github.com/trettdragos/java-trading212/packages) on every
+GitHub Release (see [Releasing](#releasing) below). GitHub Packages requires authentication to
+*read* Maven artifacts even from a public repo, so consumers need a GitHub personal access token
+with the `read:packages` scope.
 
-```bash
-mvn install
-```
+Add the repository and dependency to your project's `pom.xml`:
 
 ```xml
+<repositories>
+    <repository>
+        <id>github</id>
+        <url>https://maven.pkg.github.com/trettdragos/java-trading212</url>
+    </repository>
+</repositories>
+
 <dependency>
     <groupId>io.github.trettdragos</groupId>
     <artifactId>trading212-client</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
+    <version><!-- a published release version, e.g. 1.0.0 --></version>
 </dependency>
+```
+
+Then add a `<server>` entry for the `github` id to `~/.m2/settings.xml` (do not commit this file):
+
+```xml
+<settings>
+    <servers>
+        <server>
+            <id>github</id>
+            <username>YOUR_GITHUB_USERNAME</username>
+            <password>YOUR_GITHUB_TOKEN</password>
+        </server>
+    </servers>
+</settings>
+```
+
+Alternatively, to build and install a local copy without any of the above:
+
+```bash
+mvn install
 ```
 
 ## Usage
@@ -109,3 +137,17 @@ failures (network errors, unparseable responses) throw `Trading212Exception`.
 ```bash
 mvn test
 ```
+
+## Releasing
+
+Publishing to GitHub Packages is handled by [`.github/workflows/release.yml`](.github/workflows/release.yml),
+triggered whenever a GitHub Release is published:
+
+1. Draft a new [GitHub Release](https://github.com/trettdragos/java-trading212/releases/new) with a
+   tag in the form `vX.Y.Z` (e.g. `v1.0.0`).
+2. Publish it. The workflow sets the Maven project version to `X.Y.Z` (stripping the `v`), runs the
+   test suite, and deploys the jar (plus a sources jar) to GitHub Packages using the repo's built-in
+   `GITHUB_TOKEN` — no manual version bump or secrets setup needed.
+
+`pom.xml` itself stays on its `-SNAPSHOT` version between releases; the release tag is the only
+source of truth for published version numbers.
